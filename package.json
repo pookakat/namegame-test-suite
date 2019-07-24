@@ -10,5 +10,22 @@
   },
   "devDependencies": {
     "testcafe": "^1.1.2"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pookakat/namegame-test-suite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pookakat/namegame-test-suite/issues"
+  },
+  "homepage": "https://github.com/pookakat/namegame-test-suite#readme",
+  "dependencies": {
+    "core-js": "^3.1.4"
   }
 }

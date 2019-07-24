@@ -10,6 +10,28 @@ test('Correct title displays', async t => {
         .eql("name game")
 });
 
+test('Question displays a name', async t =>{
+    await t
+        .expect(page.name.textContent)
+        .notEql("");
+});
+
+test('Name questioned is displayed in a picture', async t =>{
+    var questName = await page.name.textContent;
+    const picNames = page.picname;
+    const count = await picNames.count
+    let match = false;
+
+    for (var i = 0; i < count; i++) {
+        let nameTested = await picNames.nth(i).textContent;
+        console.log(questName, nameTested);
+        match = match || nameTested === questName;
+    }
+
+  await t.expect( match ).ok("Name questioned does not match any photo.");
+  });
+  
+
 test('Attempts counter increments after selecting a photo', async t => {
     const initialAttemptsCount = Number(await page.attempts.textContent)
     

@@ -117,6 +117,7 @@ test('Streak counter increments if answer is correct but resets to zero if it is
     else{
         //console.log('Wrong Answer');
         await t
+        .wait(500)
         .expect(finalStreakCount)
         .eql(0);
     };    

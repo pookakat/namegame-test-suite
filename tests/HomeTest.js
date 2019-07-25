@@ -19,7 +19,7 @@ test('Question displays a name', async t =>{
 test('Name questioned is displayed in a picture', async t =>{
     const questName = await page.name.textContent;
     const picNames = page.picname;
-    const count = await picNames.count
+    const count = await picNames.count;
     let match = false;
 
     for (var i = 0; i < count; i++) {
@@ -47,7 +47,10 @@ test('Attempts counter increments after selecting a photo', async t => {
     
     await t.click(page.firstPhoto);
 
-    const finalAttemptsCount = Number(await page.attempts.textContent);
+    let finalAttemptsCount = Number(await page.attempts.textContent);
+    if (finalAttemptsCount === NaN){
+        finalAttemptsCount = 0;
+    }
 
     await t
     .expect(finalAttemptsCount)
@@ -62,11 +65,17 @@ test('Correct counter increments only after selecting the correct photo', async 
     }
 
     const questName = await page.name.textContent;
-    const picName = await page.picname.textContent;
-    
+    const picName = await page.firstPhoto.textContent;
+
     await t.click(page.firstPhoto);
 
-    const finalCorrectCount = Number(await page.correct.textContent);
+    let finalCorrectCount = Number(await page.correct.textContent);
+    if (finalCorrectCount === NaN){
+        finalCorrectCount = 0;
+    }
+
+    //This function was still thowing NaN for one of the values. I created this log to let me know whether this was still occurring.
+    //console.log(initialCorrectCount, typeof initialCorrectCount, finalCorrectCount, typeof finalCorrectCount);
 
     if (questName === picName){
         //console.log('Right Answer');
@@ -90,11 +99,14 @@ test('Streak counter increments if answer is correct but resets to zero if it is
     }
 
     const questName = await page.name.textContent;
-    const picName = await page.picname.textContent;
-    
+    const picName = await page.firstPhoto.textContent;
+
     await t.click(page.firstPhoto);
 
-    const finalStreakCount = Number(await page.streak.textContent);
+    let finalStreakCount = Number(await page.streak.textContent);
+    if (finalStreakCount === NaN){
+        finalStreakCount = 0;
+    }
 
     if (questName === picName){
         //console.log('Right Answer');
@@ -112,9 +124,10 @@ test('Streak counter increments if answer is correct but resets to zero if it is
 
 test('Box style acts correctly on a right vs a wrong answer', async t => {
     const questName = await page.name.textContent;
-    const picName = await page.picname.textContent;
+    const picName = await page.firstPhoto.textContent;
     
     await t.click(page.firstPhoto);
+    await t.wait(500);
 
     if (questName === picName){
         //console.log('Right Answer');
@@ -131,3 +144,52 @@ test('Box style acts correctly on a right vs a wrong answer', async t => {
         .ok();
     };     
 });
+
+test('Verify that a new name and set of pictures are selected after a right answer', async t =>{
+    const firstQuestName = await page.name.textContent;
+    const picNames = page.picname;
+    const count = await picNames.count;
+    const namesArray = [];
+    //These comments is how I tested a known correct test
+    //const correct = await page.firstPhoto.withText(firstQuestName);
+    const firstPicName = await page.firstPhoto.find('.name').textContent;
+    //const firstPicName = await correct.find('.name').textContent;
+
+    for (var i = 0; i < count; i++) {
+        let nameTested = await picNames.nth(i).textContent;
+        //console.log(nameTested);
+        namesArray.push(nameTested);
+    }
+
+    //await t.click(correct);
+    await t.click(page.firstPhoto);
+    await t.wait(3500);
+    await t.load;
+    const questName = await page.name.textContent;
+    const newNamesArray = [];
+
+    for (var i = 0; i < count; i++) {
+        let nameTested = await picNames.nth(i).textContent;
+        //console.log(nameTested);
+        newNamesArray.push(nameTested);
+    }
+
+    if (firstQuestName === firstPicName){
+    await t
+        .expect(questName)
+        .notEql(firstQuestName)
+        .expect(namesArray)
+        .notEql(newNamesArray);
+        //console.log(questName, firstQuestName);
+        //console.log(namesArray, newNamesArray);
+    }
+    else{
+        await t
+        .expect(questName)
+        .eql(firstQuestName)
+        .expect(namesArray)
+        .eql(newNamesArray);
+        //console.log(questName, firstQuestName);
+        //console.log(namesArray, newNamesArray);
+    }
+})

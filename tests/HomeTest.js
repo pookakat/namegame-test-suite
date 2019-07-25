@@ -17,23 +17,33 @@ test('Question displays a name', async t =>{
 });
 
 test('Name questioned is displayed in a picture', async t =>{
-    var questName = await page.name.textContent;
+    const questName = await page.name.textContent;
     const picNames = page.picname;
     const count = await picNames.count
     let match = false;
 
     for (var i = 0; i < count; i++) {
         let nameTested = await picNames.nth(i).textContent;
-        console.log(questName, nameTested);
+        /* I have written this console log and
+        others in this program as my test within 
+        a test. I include them for anyone viewing
+        my work. Want to see if it works as it's 
+        working? Uncomment out the commented console.log() 
+        lines*/
+        //console.log(questName, nameTested);
         match = match || nameTested === questName;
     }
 
-  await t.expect( match ).ok("Name questioned does not match any photo.");
+  await t.expect( match ).ok();
   });
   
 
 test('Attempts counter increments after selecting a photo', async t => {
-    const initialAttemptsCount = Number(await page.attempts.textContent)
+    let initialAttemptsCount = Number(await page.attempts.textContent);
+
+    if (initialAttemptsCount === NaN){
+        initialAttemptsCount = 0;
+    }
     
     await t.click(page.firstPhoto);
 
@@ -43,3 +53,59 @@ test('Attempts counter increments after selecting a photo', async t => {
     .expect(finalAttemptsCount)
     .eql(initialAttemptsCount + 1);
 });
+
+test('Correct counter increments only after selecting the correct photo', async t => {
+    let initialCorrectCount = Number(await page.correct.textContent);
+
+    if (initialCorrectCount === NaN){
+        initialCorrectCount = 0;
+    }
+
+    const questName = await page.name.textContent;
+    const picName = await page.picname.textContent;
+    
+    await t.click(page.firstPhoto);
+
+    const finalCorrectCount = Number(await page.correct.textContent);
+
+    if (questName === picName){
+        //console.log('Yes');
+        await t
+        .expect(finalCorrectCount)
+        .eql(initialCorrectCount + 1); 
+    }
+    else{
+        //console.log('No');
+        await t
+        .expect(finalCorrectCount)
+        .eql(initialCorrectCount);
+    };
+});
+
+test('Streak counter augments if answer is correct but resets to zero if it is not', async t => {
+    let initialStreakCount = Number(await page.streak.textContent);
+
+    if (initialStreakCount === NaN){
+        initialStreakCount = 0;
+    }
+
+    const questName = await page.name.textContent;
+    const picName = await page.picname.textContent;
+    
+    await t.click(page.firstPhoto);
+
+    const finalStreakCount = Number(await page.streak.textContent);
+
+    if (questName === picName){
+        //console.log('Yes');
+        await t
+        .expect(finalStreakCount)
+        .eql(initialStreakCount + 1); 
+    }
+    else{
+        //console.log('No');
+        await t
+        .expect(finalStreakCount)
+        .eql(0);
+    };    
+})

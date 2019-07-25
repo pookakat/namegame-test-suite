@@ -9,5 +9,7 @@ export class BasePage {
     picname = Selector(".photo .name")
     firstPhoto = Selector(".photo")
     attempts = Selector(".attempts")
+    correct = Selector(".correct")
+    streak = Selector(".streak")
 
 }

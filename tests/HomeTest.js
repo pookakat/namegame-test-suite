@@ -69,20 +69,20 @@ test('Correct counter increments only after selecting the correct photo', async 
     const finalCorrectCount = Number(await page.correct.textContent);
 
     if (questName === picName){
-        //console.log('Yes');
+        //console.log('Right Answer');
         await t
         .expect(finalCorrectCount)
         .eql(initialCorrectCount + 1); 
     }
     else{
-        //console.log('No');
+        //console.log('Wrong Answer');
         await t
         .expect(finalCorrectCount)
         .eql(initialCorrectCount);
     };
 });
 
-test('Streak counter augments if answer is correct but resets to zero if it is not', async t => {
+test('Streak counter increments if answer is correct but resets to zero if it is not', async t => {
     let initialStreakCount = Number(await page.streak.textContent);
 
     if (initialStreakCount === NaN){
@@ -97,15 +97,37 @@ test('Streak counter augments if answer is correct but resets to zero if it is n
     const finalStreakCount = Number(await page.streak.textContent);
 
     if (questName === picName){
-        //console.log('Yes');
+        //console.log('Right Answer');
         await t
         .expect(finalStreakCount)
         .eql(initialStreakCount + 1); 
     }
     else{
-        //console.log('No');
+        //console.log('Wrong Answer');
         await t
         .expect(finalStreakCount)
         .eql(0);
     };    
-})
+});
+
+test('Box style acts correctly on a right vs a wrong answer', async t => {
+    const questName = await page.name.textContent;
+    const picName = await page.picname.textContent;
+    
+    await t.click(page.firstPhoto);
+
+    if (questName === picName){
+        //console.log('Right Answer');
+        const correct = await page.correct.exists;
+        await t
+        .expect(correct)
+        .ok(); 
+    }
+    else{
+        //console.log('Wrong Answer');
+        const incorrect = await page.wrong.exists;
+        await t
+        .expect(incorrect)
+        .ok();
+    };     
+});

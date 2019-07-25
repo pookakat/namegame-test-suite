@@ -11,5 +11,7 @@ export class BasePage {
     attempts = Selector(".attempts")
     correct = Selector(".correct")
     streak = Selector(".streak")
+    right = Selector(".right")
+    wrong = Selector(".wrong")
 
 }
